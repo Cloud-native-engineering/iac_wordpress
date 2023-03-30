@@ -16,5 +16,5 @@ ansible:
   install_method: distro
   package_name: ansible
   pull:
-    url: "https://gitlab.com/cloud-native-engineering/iac_wordpress.git"
+    url: "https://github.com/Cloud-native-engineering/iac_wordpress.git"
     playbook_name: deploy_wordpress.yml

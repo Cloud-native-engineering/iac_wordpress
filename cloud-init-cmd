@@ -14,5 +14,5 @@ packages:
   - ansible
 
 runcmd:
-  - [ git, -c, http.sslVerify=false, clone, https://gitlab.com/cloud-native-engineering/iac_wordpress.git ]
+  - [ git, -c, http.sslVerify=false, clone, https://github.com/Cloud-native-engineering/iac_wordpress.git ]
   - [ ansible-playbook, iac_wordpress/deploy_wordpress.yml ]

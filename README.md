@@ -15,8 +15,6 @@ On the other hand, the cloud-init file that uses the cc-ansible role is implemen
 | [cloud-init-cmd](cloud-init-cmd)         | :white_check_mark: | :white_check_mark: |         :x:        |
 | [cloud-init-ansible](cloud-init-ansible) | :white_check_mark: |         :x:        | :white_check_mark: |
 
-&nbsp;
-
 > I recommend you use the version that uses the Ansible module within cloud-init. It is easier to understand and manage.
 
 ## License

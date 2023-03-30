@@ -1,0 +1,8 @@
+---
+- name: "Restarted services"
+  ansible.builtin.service:
+    name: "{{ item }}"
+    state: restarted
+  loop:
+    - mariadb
+    - apache2

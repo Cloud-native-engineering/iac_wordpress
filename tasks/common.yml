@@ -1,0 +1,6 @@
+---
+- name: "Upgrade all apt packages"
+  ansible.builtin.apt:
+    name: "*"
+    state: latest
+    autoremove: true

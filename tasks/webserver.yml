@@ -1,0 +1,83 @@
+---
+- name: "Install packages"
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - apache2
+    - ghostscript
+    - libapache2-mod-php
+    - php
+    - php-bcmath
+    - php-curl
+    - php-imagick
+    - php-intl
+    - php-json
+    - php-mbstring
+    - php-mysql
+    - php-xml
+    - php-zip
+
+- name: "Create wordpress directory"
+  ansible.builtin.file:
+    name: "/srv/www"
+    owner: www-data
+    recurse: true
+
+- name: "Download wordpress from web"
+  ansible.builtin.unarchive:
+    src: https://wordpress.org/latest.tar.gz
+    dest: "/srv/www"
+    owner: www-data
+    remote_src: true
+
+- name: "Deploy apache2 conf for wordpress"
+  ansible.builtin.copy:
+    src: wordpress.conf
+    dest: /etc/apache2/sites-available
+    owner: root
+    mode: "0644"
+
+- name: "Create private key (RSA, 4096 bits)"
+  community.crypto.openssl_privatekey:
+    path: "/etc/ssl/private/certificate.key"
+
+- name: "Create simple self-signed certificate"
+  community.crypto.x509_certificate:
+    path: "/etc/ssl/private/certificate.pem"
+    privatekey_path: "/etc/ssl/private/certificate.key"
+    provider: selfsigned
+
+- name: "Enable wordpress conf"
+  ansible.builtin.shell:
+    cmd: "{{ item }}"
+  loop:
+    - "a2ensite wordpress"
+    - "a2enmod rewrite"
+    - "a2dissite 000-default"
+    - "a2enmod ssl"
+
+- name: "Deploy wordpress conf"
+  ansible.builtin.template:
+    src: wp-config.php.j2
+    dest: "/srv/www/wordpress/wp-config.php"
+    owner: www-data
+    mode: "0644"
+
+- name: "Start apache2 server"
+  ansible.builtin.service:
+    name: apache2
+    state: restarted 
+    enabled: true
+
+- name: "Configure default wp settings"
+  ansible.builtin.uri:
+    url: "http://{{ ansible_default_ipv4.address }}/wp-admin/install.php?step=2"
+    method: POST
+    body_format: form-urlencoded
+    body:
+      - [ weblog_title, "{{ wp_site_title }}" ]
+      - [ user_name, "{{ wp_admin_username }}" ]
+      - [ admin_password, "{{ lookup('ansible.builtin.password', '/tmp/wp_admin_pw', chars=['ascii_letters']) }}" ]
+      - [ admin_password2, "{{ lookup('ansible.builtin.file', '/tmp/wp_admin_pw') }}" ]
+      - [ admin_email, "{{ wp_admin_email }}" ]

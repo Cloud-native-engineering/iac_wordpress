@@ -1,0 +1,22 @@
+---
+- name: "Install an all-in-one wordpress instance - iac_wordpress_all-in-one.yml"
+  hosts: localhost
+  gather_facts: true
+  become: true
+  vars:
+    - wp_site_title: "Wordpress-test"
+    - wp_admin_username: "blog_master"
+    - wp_admin_email: "blog_master@wordpress-test.local"
+
+  tasks:
+    - name: "Configure common settings"
+      ansible.builtin.import_tasks:
+        file: tasks/common.yml
+    
+    - name: "Install and configure database"
+      ansible.builtin.import_tasks:
+        file: tasks/database.yml
+
+    - name: "Install and configure webserver"  
+      ansible.builtin.import_tasks:
+        file: tasks/webserver.yml
